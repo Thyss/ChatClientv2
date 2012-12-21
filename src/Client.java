@@ -27,6 +27,7 @@ public class Client extends JFrame {
 	private int portNmbr = 5000;
 	
 	private String nickName;
+	private boolean uniqueNick = false;
 	
 	private JTextField userText;
 	private JTextArea chatWindow;
@@ -70,32 +71,37 @@ public class Client extends JFrame {
 
 		
 		//Skapar en temporär popup för att testa lite
-		nickChoice.addActionListener(
-				new ActionListener(){
-					public void actionPerformed(ActionEvent eve){
-						try {
-							output.write("NICK:" + nickChoice.getText() + "\n"); //Försöker skicka ett nickname till servern
-							nickChoice.setText("");
-							chatWindow.append("");
-						} catch (IOException e) {
-							System.err.println("Could not send nickname..");
-						}
-						
+		while(uniqueNick == false){
+				try {
+					if (input.readLine() != "NICK:OK"){
+						nickChoice.addActionListener(
+								new ActionListener(){
+									public void actionPerformed(ActionEvent eve){
+										try {
+											output.write("NICK:" + nickChoice.getText() + "\n"); //Försöker skicka ett nickname till servern
+											nickChoice.setText("");
+											chatWindow.append("");
+										} catch (IOException e) {
+											System.err.println("Could not send nickname..");
+										}
+										
+									}
+								});
+						chooseNickFrame.add(plsChooseNick, BorderLayout.NORTH);
+						chooseNickFrame.add(nickChoice, BorderLayout.SOUTH);
+						chooseNickFrame.setVisible(true);
+						chooseNickFrame.setSize(200, 80);
+					}else{
+						uniqueNick = true;
+						chatting();
 					}
-				});
-		chooseNickFrame.add(plsChooseNick, BorderLayout.NORTH);
-		chooseNickFrame.add(nickChoice, BorderLayout.SOUTH);
-		chooseNickFrame.setVisible(true);
-		chooseNickFrame.setSize(200, 80);
-		
-		try {
-			showText(input.readLine());						//Försöker läsa ut något från servern för att se om vi får något svar av att sätta ett nickname
-		} catch (IOException e) {
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			
-			e.printStackTrace();
 		}
 		
-		chatting();
 		
 	}
 	
