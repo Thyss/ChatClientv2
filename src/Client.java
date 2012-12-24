@@ -81,40 +81,6 @@ public class Client extends JFrame {
 	public void nickChooser() {
 		showText("Choose a nickname and press enter");
 	}
-
-	/*public void nickChooser() {
-		//Skapar en temporär popup för att testa lite
-		while(uniqueNick == false){
-				nickChoice.addActionListener(
-						new ActionListener(){
-							public void actionPerformed(ActionEvent eve){
-								try {
-									output.write("NICK:" + nickChoice.getText() + "\n"); //Försöker skicka ett nickname till servern
-									nickChoice.setText("");
-									chatWindow.append("");
-								} catch (IOException e) {
-									System.err.println("Could not send nickname..");
-								}
-							}
-						});
-				
-				chooseNickFrame.add(plsChooseNick, BorderLayout.NORTH);
-				chooseNickFrame.add(nickChoice, BorderLayout.SOUTH);
-				chooseNickFrame.setVisible(true);
-				chooseNickFrame.setSize(200, 80);
-			
-				try {
-					if (input.readLine() == "NICK:OK") {
-						uniqueNick = true;
-						break;
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		}
-		
-		
-	}*/
 	
 	public void connect(String address, int port)throws IOException{
 		socket = new Socket(address, port);
