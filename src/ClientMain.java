@@ -10,7 +10,7 @@ public class ClientMain {
 	public static void main(String[] args) {
 		Client client = new Client();
 		client.startProgram();
-		
+
 		try {
 			client.connect("localhost", 5000);
 			client.chatting();

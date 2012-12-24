@@ -40,7 +40,10 @@ public class Client extends JFrame {
 	      userText.addActionListener(
 	         new ActionListener(){
 	            public void actionPerformed(ActionEvent event){
-	            	if (userText.getText() != ""){
+	            	if (uniqueNick == false){
+	            			sendNickname(userText.getText());
+	            			userText.setText("");
+	            	} else {
 	            		sendMessage(userText.getText());
 	            		userText.setText("");
 	            	}
@@ -50,7 +53,7 @@ public class Client extends JFrame {
 	      add(userText, BorderLayout.NORTH);
 	      chatWindow = new JTextArea();
 	      add(new JScrollPane(chatWindow), BorderLayout.CENTER);
-	      setSize(300,150);
+	      setSize(300,400);
 	      setVisible(true);
 	      setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
@@ -68,42 +71,46 @@ public class Client extends JFrame {
 			System.err.println("Error: " + e.getMessage());
 			System.exit(1);
 		}
+		nickChooser();
+	}
+	
+	public void nickChooser() {
+		showText("Choose a nickname and press enter");
+	}
 
-		
+	/*public void nickChooser() {
 		//Skapar en temporär popup för att testa lite
 		while(uniqueNick == false){
+				nickChoice.addActionListener(
+						new ActionListener(){
+							public void actionPerformed(ActionEvent eve){
+								try {
+									output.write("NICK:" + nickChoice.getText() + "\n"); //Försöker skicka ett nickname till servern
+									nickChoice.setText("");
+									chatWindow.append("");
+								} catch (IOException e) {
+									System.err.println("Could not send nickname..");
+								}
+							}
+						});
+				
+				chooseNickFrame.add(plsChooseNick, BorderLayout.NORTH);
+				chooseNickFrame.add(nickChoice, BorderLayout.SOUTH);
+				chooseNickFrame.setVisible(true);
+				chooseNickFrame.setSize(200, 80);
+			
 				try {
-					if (input.readLine() != "NICK:OK"){
-						nickChoice.addActionListener(
-								new ActionListener(){
-									public void actionPerformed(ActionEvent eve){
-										try {
-											output.write("NICK:" + nickChoice.getText() + "\n"); //Försöker skicka ett nickname till servern
-											nickChoice.setText("");
-											chatWindow.append("");
-										} catch (IOException e) {
-											System.err.println("Could not send nickname..");
-										}
-										
-									}
-								});
-						chooseNickFrame.add(plsChooseNick, BorderLayout.NORTH);
-						chooseNickFrame.add(nickChoice, BorderLayout.SOUTH);
-						chooseNickFrame.setVisible(true);
-						chooseNickFrame.setSize(200, 80);
-					}else{
+					if (input.readLine() == "NICK:OK") {
 						uniqueNick = true;
-						chatting();
+						break;
 					}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			
 		}
 		
 		
-	}
+	}*/
 	
 	public void connect(String address, int port)throws IOException{
 		socket = new Socket(address, port);
@@ -130,7 +137,15 @@ public class Client extends JFrame {
 					showText("\n " + mess); 				//showText-metoden skickar upp meddelandet pÃ¥ chattfÃ¤ltet
 				}else if(message.startsWith("NEW USER:")){
 					String mess = message.split(":")[1];	
-					showText("\n " + mess); 
+					showText("\n " + mess + " has started chatting!"); 
+				}else if(message.startsWith("USER LEFT:")){
+					String mess = message.split(":")[1];
+					showText("\n" + mess + " has logged off.");
+				}else if(message.startsWith("NICK:TAKEN")){
+					showText("\nNickname already taken, please choose another.");
+					uniqueNick = false;
+				}else if(message.startsWith("NICK:OK")){
+					uniqueNick = true;
 				}
 			
 			}catch(IOException notfound){
@@ -148,6 +163,15 @@ public class Client extends JFrame {
 				chatWindow.append("\nCan't send message..."); 
 			}
 	}
+	
+	public void sendNickname(String message){
+		try{
+			output.write("NICK:"+message+"\n");				//Skickar ett meddelande
+			output.flush();									//Spolar toaletten :)
+		}catch (IOException e){
+			chatWindow.append("\nCan't send nickname..."); 
+		}
+}
 	
 	public void close(){
 		try {
