@@ -40,13 +40,17 @@ public class Client extends JFrame {
 	      userText.addActionListener(
 	         new ActionListener(){
 	            public void actionPerformed(ActionEvent event){
-	            	if (uniqueNick == false){
-	            			sendNickname(userText.getText());
-	            			userText.setText("");
-	            	} else {
-	            		sendMessage(userText.getText());
-	            		userText.setText("");
-	            	}
+            		if (userText.getText().length() == 0) {
+            			return; }
+            		else {
+            			if (uniqueNick == false){
+            				sendNickname(userText.getText());
+            				userText.setText("");
+            			} else {
+            				sendMessage(userText.getText());
+            				userText.setText("");
+            			}
+            		}
 	            }
 	         }
 	      );
